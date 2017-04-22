@@ -68,7 +68,15 @@ def get_mmc_info(path):
 
     # type is either SD or MMC
     filename = os.path.join(path, 'device/type')
-    mmc['type'] = open(filename).readline().lower()
+
+    text = open(filename).readline()
+
+    if text.startswith('SD'):
+        mmc['type'] = 'sd'
+    elif text.startswith('MMC'):
+        mmc['type'] = 'emmc'
+    else:
+        mmc['type'] = 'unknown'
 
     mmc['partitions'] = []
 
@@ -104,5 +112,8 @@ if __name__ == '__main__':
     pprint(stat())
     pprint(meminfo())
 
-    pprint(get_mmc_info('/sys/block/mmcblk0'))
-    pprint(get_mmc_info('/sys/block/mmcblk1'))
+    blocks = [name for name in os.listdir('/sys/block') if name.startswith('mmc')]
+
+    for block in blocks:
+        path = os.path.join('/sys/block', block)
+        pprint(get_mmc_info(block))
