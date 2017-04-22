@@ -59,34 +59,36 @@ def mediainfo():
             pass
 
 
-def get_mmc_info(path):
-    mmc = {}
+def get_block_info(blockname):
+    syspath = os.path.join('/sys/block', blockname)
+
+    info = {}
 
     # units of size are 512 byte blocks
-    filename = os.path.join(path, 'size')
-    mmc['size'] = int(open(filename).readline()) * 512
+    filename = os.path.join(syspath, 'size')
+    info['size'] = int(open(filename).readline()) * 512
 
     # type is either SD or MMC
-    filename = os.path.join(path, 'device/type')
+    filename = os.path.join(syspath, 'device/type')
 
     text = open(filename).readline()
 
     if text.startswith('SD'):
-        mmc['type'] = 'sd'
+        info['type'] = 'sd'
     elif text.startswith('MMC'):
-        mmc['type'] = 'emmc'
+        info['type'] = 'emmc'
     else:
-        mmc['type'] = 'unknown'
+        info['type'] = 'unknown'
 
-    mmc['partitions'] = []
+    info['partitions'] = []
 
-    for name in [name for name in os.listdir(path) if name.startswith('mmc')]:
-        mmc['partitions'].append(get_partition_info(os.path.join(path, name)))
+    for name in [name for name in os.listdir(syspath) if name.startswith(blockname)]:
+        info['partitions'].append(get_partition_info(os.path.join(syspath, name)))
 
-    for part in mmc['partitions']:
-        part['ratio'] = part['size'] / mmc['size']
+    for part in info['partitions']:
+        part['ratio'] = part['size'] / info['size']
 
-    return mmc
+    return info
 
 
 def get_partition_info(path):
@@ -112,8 +114,5 @@ if __name__ == '__main__':
     pprint(stat())
     pprint(meminfo())
 
-    blocks = [name for name in os.listdir('/sys/block') if name.startswith('mmc')]
-
-    for block in blocks:
-        path = os.path.join('/sys/block', block)
-        pprint(get_mmc_info(block))
+    for name in filter(lambda s: s.startswith('mmc'), os.listdir('/sys/block')):
+        pprint(get_block_info(name))
