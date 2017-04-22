@@ -39,7 +39,7 @@ def meminfo():
     results = {}
 
     for line in open('/proc/meminfo'):
-        match = re.search('(.*):\s*(\d+)\s*kB')
+        match = re.search('(.*):\s*(\d+)\s*kB', line)
 
         if match is not None:
             results[match.group(1)] = int(match.group(2))
