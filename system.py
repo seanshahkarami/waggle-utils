@@ -1,13 +1,9 @@
 import re
 
 
-def readfile(path):
-    with open(path, 'r') as f:
-        return f.read()
-
-
 def uptime():
-    fields = readfile('/proc/uptime').split()
+    fields = open('/proc/uptime').readline().split()
+
     return {
         'uptime': float(fields[0]),
         'idle': float(fields[1]),
@@ -15,13 +11,13 @@ def uptime():
 
 
 def stat():
-    stat = {'cpu': []}
+    results = {'cpu': []}
 
     for line in open('/proc/stat'):
         fields = line.split()
 
         if fields[0].startswith('cpu'):
-            stat['cpu'].append({
+            results['cpu'].append({
                 'name': fields[0],
                 'user': int(fields[1]),
                 'nice': int(fields[2]),
@@ -34,9 +30,25 @@ def stat():
                 'guest_nice': int(fields[9]),
             })
         elif fields[0].startswith('btime'):
-            stat['boot_time'] = int(fields[1])
+            results['btime'] = int(fields[1])
 
-    return stat
+    return results
 
 
-print(stat())
+def meminfo():
+    results = {}
+
+    for line in open('/proc/meminfo'):
+        match = re.search('(.*):\s*(\d+)\s*kB')
+
+        if match is not None:
+            results[match.group(1)] = int(match.group(2))
+
+    return results
+
+
+if __name__ == '__main__':
+    from pprint import pprint
+    pprint(uptime())
+    pprint(stat())
+    pprint(meminfo())
