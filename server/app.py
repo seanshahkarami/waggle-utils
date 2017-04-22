@@ -45,3 +45,13 @@ def memstats():
 @app.route('/net')
 def netstats():
     return jsonify({})
+
+
+@app.route('/uptime')
+def uptime():
+    with open('/proc/uptime') as f:
+        fields = f.readline().split()
+        return jsonify({
+            'uptime': float(fields[0]),
+            'idle': float(fields[1]),
+        })
