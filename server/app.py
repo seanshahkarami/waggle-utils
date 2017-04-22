@@ -10,7 +10,7 @@ def index():
     return 'here is something for you!'
 
 
-@app.route('/load')
+@app.route('/loadavg')
 def loadavg():
     stats = {}
 
