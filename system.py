@@ -1,34 +1,25 @@
 import re
 
 
+uptime_fields = ['uptime', 'idle']
+
+
 def uptime():
     fields = open('/proc/uptime').readline().split()
+    return dict(zip(uptime_fields, map(float, fields)))
 
-    return {
-        'uptime': float(fields[0]),
-        'idle': float(fields[1]),
-    }
+
+stat_cpu_fields = ['name', 'user', 'nice', 'system', 'idle', 'iowait', 'softirq', 'steal', 'guest', 'guest_nice']
 
 
 def stat():
-    results = {'cpu': []}
+    results = {'cpu': {}}
 
     for line in open('/proc/stat'):
         fields = line.split()
 
         if fields[0].startswith('cpu'):
-            results['cpu'].append({
-                'name': fields[0],
-                'user': int(fields[1]),
-                'nice': int(fields[2]),
-                'system': int(fields[3]),
-                'idle': int(fields[4]),
-                'iowait': int(fields[5]),
-                'softirq': int(fields[6]),
-                'steal': int(fields[7]),
-                'guest': int(fields[8]),
-                'guest_nice': int(fields[9]),
-            })
+            results['cpu'][fields[0]] = dict(zip(stat_cpu_fields, map(int, fields)))
         elif fields[0].startswith('btime'):
             results['btime'] = int(fields[1])
 
