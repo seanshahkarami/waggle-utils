@@ -9,7 +9,7 @@ def uptime():
     return dict(zip(uptime_fields, map(float, fields)))
 
 
-stat_cpu_fields = ['name', 'user', 'nice', 'system', 'idle', 'iowait', 'softirq', 'steal', 'guest', 'guest_nice']
+stat_cpu_fields = ['user', 'nice', 'system', 'idle', 'iowait', 'softirq', 'steal', 'guest', 'guest_nice']
 
 
 def stat():
@@ -19,7 +19,8 @@ def stat():
         fields = line.split()
 
         if fields[0].startswith('cpu'):
-            results['cpu'][fields[0]] = dict(zip(stat_cpu_fields, map(int, fields)))
+            name, *cpu_fields = fields
+            results['cpu'][name] = dict(zip(stat_cpu_fields, map(int, cpu_fields)))
         elif fields[0].startswith('btime'):
             results['btime'] = int(fields[1])
 
