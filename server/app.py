@@ -10,6 +10,21 @@ def index():
     return 'here is something for you!'
 
 
+@app.route('/load')
+def loadavg():
+    stats = {}
+
+    with open('/proc/loadavg') as f:
+        fields = f.readline().split()
+        return jsonify({
+            'loadavg1': float(fields[0]),
+            'loadavg5': float(fields[1]),
+            'loadavg10': float(fields[2]),
+        })
+
+    return jsonify(stats)
+
+
 @app.route('/cpu')
 def cpustats():
     stats = {}
