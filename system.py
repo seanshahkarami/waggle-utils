@@ -63,17 +63,17 @@ def get_mmc_info(path):
     mmc = {}
 
     # units of size are 512 byte blocks
-    filename = os.join(path, 'size')
+    filename = os.path.join(path, 'size')
     mmc['size'] = int(open(filename).readline()) * 512
 
     # type is either SD or MMC
-    filename = os.join(path, 'device/type')
+    filename = os.path.join(path, 'device/type')
     mmc['type'] = open(filename).readline().lower()
 
     mmc['partitions'] = []
 
     for name in [name for name in os.listdir(path) if name.startswith('mmc')]:
-        mmc['partitions'].append(get_partition_info(os.join(path, name)))
+        mmc['partitions'].append(get_partition_info(os.path.join(path, name)))
 
     for part in mmc['partitions']:
         part['ratio'] = part['size'] / mmc['size']
@@ -84,15 +84,15 @@ def get_mmc_info(path):
 def get_partition_info(path):
     part = {}
 
-    filename = os.join(path, 'partition')
+    filename = os.path.join(path, 'partition')
     part['partition'] = int(open(filename).readline())
 
     # units of start are 512 byte blocks
-    filename = os.join(path, 'start')
+    filename = os.path.join(path, 'start')
     part['start'] = int(open(filename).readline()) * 512
 
     # units of size are 512 byte blocks
-    filename = os.join(path, 'size')
+    filename = os.path.join(path, 'size')
     part['size'] = int(open(filename).readline()) * 512
 
     return part
