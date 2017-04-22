@@ -12,7 +12,22 @@ def index():
 
 @app.route('/cpu')
 def cpustats():
-    return jsonify({})
+    stats = {}
+
+    with open('/proc/stat') as f:
+        for line in f:
+            if line.startswith('cpu'):
+                fields = line.split()
+                stats[fields[0]] = {
+                    'user': int(fields[1]),
+                    'nice': int(fields[2]),
+                    'system': int(fields[3]),
+                    'idle': int(fields[4]),
+                    'iowait': int(fields[5]),
+                    'softirq': int(fields[6]),
+                }
+
+    return jsonify(stats)
 
 
 memunits = {
@@ -24,20 +39,21 @@ memunits = {
 def memstats():
     stats = {}
 
-    for line in open('/proc/meminfo'):
-        fields = line.split(':')
-        key = fields[0].strip()
-        rhs = fields[1].split()
+    with open('/proc/meminfo') as f:
+        for line in f:
+            fields = line.split(':')
+            key = fields[0].strip()
+            rhs = fields[1].split()
 
-        if len(rhs) == 1:
-            value = int(rhs[0])
-        elif len(rhs) == 2:
-            try:
-                value = int(rhs[0]) * memunits[rhs[1]]
-            except KeyError:
-                value = -1
+            if len(rhs) == 1:
+                value = int(rhs[0])
+            elif len(rhs) == 2:
+                try:
+                    value = int(rhs[0]) * memunits[rhs[1]]
+                except KeyError:
+                    value = -1
 
-        stats[key] = value
+            stats[key] = value
 
     return jsonify(stats)
 
