@@ -1,6 +1,6 @@
 import os
 import os.path
-from contextlib import suppress
+import re
 
 
 units = {
@@ -93,7 +93,7 @@ def uptime():
 
 
 def blocks():
-    return [blockinfo(block) for block in os.listdir('/sys/block')]
+    return [blockinfo(block) for block in os.listdir('/sys/block') if block.startswith()]
 
 
 def blockinfo(block):
@@ -102,13 +102,12 @@ def blockinfo(block):
     blockinfo = {}
 
     sector_size = readint(blockpath, 'queue/hw_sector_size')
-
     blockinfo['size'] = readint(blockpath, 'size') * sector_size
     blockinfo['type'] = readtext(blockpath, 'device/type')
 
     blockinfo['partitions'] = {}
 
-    for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
+    for part in [part for part in os.listdir(blockpath) if re.match('mmc*|sd*', part)]:
         partpath = os.path.join(blockpath, part)
 
         partinfo = {}
@@ -119,11 +118,5 @@ def blockinfo(block):
 
         number = readint(partpath, 'partition')
         blockinfo['partitions'][number] = partinfo
-
-    # with suppress(FileNotFoundError):
-    #     blockinfo['model'] = readtext(blockpath, 'device/model')
-    #
-    # with suppress(FileNotFoundError):
-    #     blockinfo['vendor'] = readtext(blockpath, 'device/vendor')
 
     return blockinfo
