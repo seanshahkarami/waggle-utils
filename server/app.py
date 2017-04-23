@@ -73,6 +73,22 @@ def memstats():
     return jsonify(stats)
 
 
+@app.route('/mounts')
+def mounts():
+    results = {}
+
+    with open('/proc/mounts') as f:
+        for line in f:
+            fields = line.split()
+            results[fields[1]] = {
+                'dev': fields[0],
+                'type': fields[2],
+                'attr': fields[3],
+            }
+
+    return jsonify(results)
+
+
 @app.route('/net')
 def netstats():
     return jsonify({})
