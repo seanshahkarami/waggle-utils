@@ -97,29 +97,33 @@ def blocks():
 
 
 def blockinfo(block):
-    blockinfo = {}
     blockpath = os.path.join('/sys/block', block)
+
+    blockinfo = {}
 
     sector_size = readint(blockpath, 'queue/hw_sector_size')
 
     blockinfo['size'] = readint(blockpath, 'size') * sector_size
     blockinfo['type'] = readtext(blockpath, 'device/type')
+
     blockinfo['partitions'] = {}
 
     for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
-        partinfo = {}
         partpath = os.path.join(blockpath, part)
+
+        partinfo = {}
 
         partinfo['start'] = readint(partpath, 'start') * sector_size
         partinfo['size'] = readint(partpath, 'size') * sector_size
         partinfo['ratio'] = partinfo['size'] / blockinfo['size']
 
-        blockinfo['partitions'][readint(partpath, 'partition')] = partinfo
+        number = readint(partpath, 'partition')
+        blockinfo['partitions'][number] = partinfo
 
-    with suppress(FileNotFoundError):
-        blockinfo['model'] = readtext(blockpath, 'device/model')
-
-    with suppress(FileNotFoundError):
-        blockinfo['vendor'] = readtext(blockpath, 'device/vendor')
+    # with suppress(FileNotFoundError):
+    #     blockinfo['model'] = readtext(blockpath, 'device/model')
+    #
+    # with suppress(FileNotFoundError):
+    #     blockinfo['vendor'] = readtext(blockpath, 'device/vendor')
 
     return blockinfo
