@@ -39,3 +39,13 @@ def netstats():
 @app.route('/uptime')
 def uptime():
     return jsonify(stats.uptime())
+
+
+@app.route('/blocks')
+def blocks():
+    return jsonify(stats.blocks())
+
+
+@app.route('/blocks/<block>')
+def blockinfo(block):
+    return jsonify(stats.blockinfo(block))

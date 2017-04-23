@@ -1,6 +1,26 @@
+import os
+import os.path
+
+
 units = {
     'kB': 1024,
+    'mB': 1024**2,
+    'gB': 1024**3,
 }
+
+
+def readtext(*path):
+    filename = os.path.join(*path)
+
+    with open(filename) as f:
+        return f.readline().rstrip()
+
+
+def readint(*path):
+    filename = os.path.join(*path)
+
+    with open(filename) as f:
+        return int(f.readline())
 
 
 def loadavg():
@@ -73,3 +93,34 @@ def uptime():
             'uptime': float(fields[0]),
             'idle': float(fields[1]),
         }
+
+
+def blocks():
+    return [blockinfo(block) for block in os.listdir('/sys/block')]
+
+
+def blockinfo(block):
+    blockinfo = {}
+    blockpath = os.path.join('/sys/block', block)
+
+    sector_size = readint(blockpath, 'queue/hw_sector_size')
+
+    blockinfo['size'] = readint(blockpath, 'size') * sector_size
+    blockinfo['model'] = readint(blockpath, 'device/model')
+    blockinfo['vendor'] = readint(blockpath, 'device/vendor')
+    blockinfo['type'] = readint(blockpath, 'device/type')
+
+    blockinfo['partitions'] = []
+
+    for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
+        partinfo = {}
+        partpath = os.path.join(blockpath, part)
+
+        partinfo['partition'] = readint(partpath, 'partition')
+        partinfo['start'] = readint(partpath, 'start') * sector_size
+        partinfo['size'] = readint(partpath, 'size') * sector_size
+        partinfo['ratio'] = partinfo['size'] / blockinfo['size']
+
+        blockinfo['partitions'].append(partinfo)
+
+    return blockinfo
