@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import jsonify
+import stats
 
 
 app = Flask(__name__)
@@ -12,81 +13,22 @@ def index():
 
 @app.route('/loadavg')
 def loadavg():
-    stats = {}
-
-    with open('/proc/loadavg') as f:
-        fields = f.readline().split()
-        return jsonify({
-            'loadavg1': float(fields[0]),
-            'loadavg5': float(fields[1]),
-            'loadavg10': float(fields[2]),
-        })
-
-    return jsonify(stats)
+    return jsonify(stats.loadavg())
 
 
 @app.route('/cpu')
 def cpustats():
-    stats = {}
-
-    with open('/proc/stat') as f:
-        for line in f:
-            if line.startswith('cpu'):
-                fields = line.split()
-                stats[fields[0]] = {
-                    'user': int(fields[1]),
-                    'nice': int(fields[2]),
-                    'system': int(fields[3]),
-                    'idle': int(fields[4]),
-                    'iowait': int(fields[5]),
-                    'softirq': int(fields[6]),
-                }
-
-    return jsonify(stats)
-
-
-memunits = {
-    'kB': 1024,
-}
+    return jsonify(stats.cpustats())
 
 
 @app.route('/mem')
 def memstats():
-    stats = {}
-
-    with open('/proc/meminfo') as f:
-        for line in f:
-            fields = line.split(':')
-            key = fields[0].strip()
-            rhs = fields[1].split()
-
-            if len(rhs) == 1:
-                value = int(rhs[0])
-            elif len(rhs) == 2:
-                try:
-                    value = int(rhs[0]) * memunits[rhs[1]]
-                except KeyError:
-                    value = -1
-
-            stats[key] = value
-
-    return jsonify(stats)
+    return jsonify(stats.meminfo())
 
 
 @app.route('/mounts')
 def mounts():
-    results = {}
-
-    with open('/proc/mounts') as f:
-        for line in f:
-            fields = line.split()
-            results[fields[1]] = {
-                'dev': fields[0],
-                'type': fields[2],
-                'attr': fields[3],
-            }
-
-    return jsonify(results)
+    return jsonify(stats.mounts())
 
 
 @app.route('/net')
@@ -96,9 +38,4 @@ def netstats():
 
 @app.route('/uptime')
 def uptime():
-    with open('/proc/uptime') as f:
-        fields = f.readline().split()
-        return jsonify({
-            'uptime': float(fields[0]),
-            'idle': float(fields[1]),
-        })
+    return jsonify(stats.uptime())
