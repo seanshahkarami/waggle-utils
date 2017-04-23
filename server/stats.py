@@ -93,7 +93,7 @@ def uptime():
 
 
 def blocks():
-    return [blockinfo(block) for block in os.listdir('/sys/block') if block.startswith()]
+    return [blockinfo(block) for block in os.listdir('/sys/block') if re.match('mmc*|sd*', block)]
 
 
 def blockinfo(block):
@@ -107,7 +107,7 @@ def blockinfo(block):
 
     blockinfo['partitions'] = {}
 
-    for part in [part for part in os.listdir(blockpath) if re.match('mmc*|sd*', part)]:
+    for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
         partpath = os.path.join(blockpath, part)
 
         partinfo = {}
