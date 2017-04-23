@@ -43,7 +43,7 @@ def uptime():
 
 @app.route('/blocks')
 def blocks():
-    return jsonify(stats.blocks())
+    return jsonify(stats.listblocks())
 
 
 @app.route('/blocks/<block>')

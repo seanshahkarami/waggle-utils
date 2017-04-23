@@ -92,8 +92,8 @@ def uptime():
         }
 
 
-def blocks():
-    return [blockinfo(block) for block in os.listdir('/sys/block') if re.match('mmc*|sd*', block)]
+def listblocks():
+    return os.listdir('/sys/block')
 
 
 def blockinfo(block):
