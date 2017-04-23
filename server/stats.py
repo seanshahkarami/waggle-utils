@@ -1,5 +1,6 @@
 import os
 import os.path
+from contextlib import suppress
 
 
 units = {
@@ -10,16 +11,12 @@ units = {
 
 
 def readtext(*path):
-    filename = os.path.join(*path)
-
-    with open(filename) as f:
+    with open(os.path.join(*path)) as f:
         return f.readline().rstrip()
 
 
 def readint(*path):
-    filename = os.path.join(*path)
-
-    with open(filename) as f:
+    with open(os.path.join(*path)) as f:
         return int(f.readline())
 
 
@@ -106,10 +103,7 @@ def blockinfo(block):
     sector_size = readint(blockpath, 'queue/hw_sector_size')
 
     blockinfo['size'] = readint(blockpath, 'size') * sector_size
-    blockinfo['model'] = readint(blockpath, 'device/model')
-    blockinfo['vendor'] = readint(blockpath, 'device/vendor')
-    blockinfo['type'] = readint(blockpath, 'device/type')
-
+    blockinfo['type'] = readtext(blockpath, 'device/type')
     blockinfo['partitions'] = []
 
     for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
@@ -122,5 +116,11 @@ def blockinfo(block):
         partinfo['ratio'] = partinfo['size'] / blockinfo['size']
 
         blockinfo['partitions'].append(partinfo)
+
+    with suppress(FileNotFoundError):
+        blockinfo['model'] = readtext(blockpath, 'device/model')
+
+    with suppress(FileNotFoundError):
+        blockinfo['vendor'] = readtext(blockpath, 'device/vendor')
 
     return blockinfo
