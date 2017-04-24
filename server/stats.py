@@ -20,31 +20,36 @@ def readint(*path):
         return int(f.readline())
 
 
+def readlines(*path):
+    with open(os.path.join(*path)) as f:
+        for line in f:
+            yield line.rstrip()
+
+
 def loadavg():
-    with open('/proc/loadavg') as f:
-        fields = f.readline().split()
-        return {
-            'loadavg1': float(fields[0]),
-            'loadavg5': float(fields[1]),
-            'loadavg10': float(fields[2]),
-        }
+    fields = readtext('/proc/loadavg').split()
+
+    return {
+        'loadavg1': float(fields[0]),
+        'loadavg5': float(fields[1]),
+        'loadavg10': float(fields[2]),
+    }
 
 
 def cpustats():
     stats = {}
 
-    with open('/proc/stat') as f:
-        for line in f:
-            if line.startswith('cpu'):
-                fields = line.split()
-                stats[fields[0]] = {
-                    'user': int(fields[1]),
-                    'nice': int(fields[2]),
-                    'system': int(fields[3]),
-                    'idle': int(fields[4]),
-                    'iowait': int(fields[5]),
-                    'softirq': int(fields[6]),
-                }
+    for line in readlines('/proc/stat'):
+        if line.startswith('cpu'):
+            fields = line.split()
+            stats[fields[0]] = {
+                'user': int(fields[1]),
+                'nice': int(fields[2]),
+                'system': int(fields[3]),
+                'idle': int(fields[4]),
+                'iowait': int(fields[5]),
+                'softirq': int(fields[6]),
+            }
 
     return stats
 
