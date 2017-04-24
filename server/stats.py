@@ -42,6 +42,7 @@ def cpustats():
     for line in readlines('/proc/stat'):
         if line.startswith('cpu'):
             fields = line.split()
+
             stats[fields[0]] = {
                 'user': int(fields[1]),
                 'nice': int(fields[2]),
@@ -57,18 +58,17 @@ def cpustats():
 def meminfo():
     stats = {}
 
-    with open('/proc/meminfo') as f:
-        for line in f:
-            fields = line.split(':')
-            key = fields[0].strip()
-            rhs = fields[1].split()
+    for line in readlines('/proc/meminfo'):
+        fields = line.split(':')
+        key = fields[0].strip()
+        rhs = fields[1].split()
 
-            if len(rhs) == 1:
-                value = int(rhs[0])
-            elif len(rhs) == 2:
-                value = int(rhs[0]) * units[rhs[1]]
+        if len(rhs) == 1:
+            value = int(rhs[0])
+        elif len(rhs) == 2:
+            value = int(rhs[0]) * units[rhs[1]]
 
-            stats[key] = value
+        stats[key] = value
 
     return stats
 
@@ -76,25 +76,25 @@ def meminfo():
 def mounts():
     results = {}
 
-    with open('/proc/mounts') as f:
-        for line in f:
-            fields = line.split()
-            results[fields[1]] = {
-                'dev': fields[0],
-                'type': fields[2],
-                'attr': fields[3],
-            }
+    for line in readlines('/proc/mounts'):
+        fields = line.split()
+
+        results[fields[1]] = {
+            'dev': fields[0],
+            'type': fields[2],
+            'attr': fields[3],
+        }
 
     return results
 
 
 def uptime():
-    with open('/proc/uptime') as f:
-        fields = f.readline().split()
-        return {
-            'uptime': float(fields[0]),
-            'idle': float(fields[1]),
-        }
+    fields = readtext('/proc/uptime').split()
+
+    return {
+        'uptime': float(fields[0]),
+        'idle': float(fields[1]),
+    }
 
 
 def listblocks():
