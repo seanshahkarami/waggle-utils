@@ -141,6 +141,8 @@ def devices():
                 'manufacturer': readtext(path, 'manufacturer'),
                 'product': readtext(path, 'product'),
                 'version': readtext(path, 'version'),
+                'idProduct': readtext(path, 'idProduct'),
+                'idVendor': readtext(path, 'idVendor'),
             })
         except FileNotFoundError:
             continue
