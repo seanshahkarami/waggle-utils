@@ -125,6 +125,8 @@ def blockinfo(block):
         partinfo['ratio'] = partinfo['size'] / blockinfo['size']
         partinfo['partition'] = readint(partpath, 'partition')
 
+        blockinfo['partitions'].append(partinfo)
+
     blockinfo['partitions'].sort(key=lambda p: p['partition'])
 
     return blockinfo
