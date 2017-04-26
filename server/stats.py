@@ -133,8 +133,8 @@ def blockinfo(block):
 def devices():
     devices = []
 
-    for device in os.listdir('/sys/bus/usb'):
-        path = os.path.join('/sys/bus/usb', device)
+    for device in os.listdir('/sys/bus/usb/devices'):
+        path = os.path.join('/sys/bus/usb/devices', device)
 
         try:
             devices.append({
