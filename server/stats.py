@@ -62,7 +62,7 @@ def cpustats():
 def meminfo():
     stats = {}
 
-    for fields in readfields('/proc/meminfo', sep='\s*:\s*'):
+    for fields in readfields('\s*:\s*', '/proc/meminfo'):
         key = fields[0].strip()
         rhs = fields[1].split()
 
