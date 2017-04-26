@@ -26,6 +26,12 @@ def readlines(*path):
             yield line.rstrip()
 
 
+def readfields(sep='\s+', *path):
+    with open(os.path.join(*path)) as f:
+        for line in f:
+            yield re.split(sep, line)
+
+
 def loadavg():
     fields = readtext('/proc/loadavg').split()
 
@@ -39,10 +45,8 @@ def loadavg():
 def cpustats():
     stats = {}
 
-    for line in readlines('/proc/stat'):
-        if line.startswith('cpu'):
-            fields = line.split()
-
+    for fields in readfields('/proc/stat'):
+        if fields[0].startswith('cpu'):
             stats[fields[0]] = {
                 'user': int(fields[1]),
                 'nice': int(fields[2]),
@@ -58,8 +62,7 @@ def cpustats():
 def meminfo():
     stats = {}
 
-    for line in readlines('/proc/meminfo'):
-        fields = line.split(':')
+    for fields in readfields('/proc/meminfo', sep='\s*:\s*'):
         key = fields[0].strip()
         rhs = fields[1].split()
 
@@ -125,3 +128,21 @@ def blockinfo(block):
         blockinfo['partitions'][number] = partinfo
 
     return blockinfo
+
+
+def devices():
+    devices = []
+
+    for device in os.listdir('/sys/bus/usb'):
+        path = os.path.join('/sys/bus/usb', device)
+
+        try:
+            devices.append({
+                'manufacturer': readtext(path, 'manufacturer'),
+                'product': readtext(path, 'product'),
+                'version': readtext(path, 'version'),
+            })
+        except FileNotFoundError:
+            continue
+
+    return devices

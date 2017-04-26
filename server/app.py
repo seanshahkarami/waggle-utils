@@ -49,3 +49,8 @@ def blocks():
 @app.route('/blocks/<block>')
 def blockinfo(block):
     return jsonify(stats.blockinfo(block))
+
+
+@app.route('/devices')
+def devices():
+    return jsonify(stats.devices())
