@@ -26,7 +26,7 @@ def readlines(*path):
             yield line.rstrip()
 
 
-def readfields(sep='\s+', *path):
+def readfields(sep, *path):
     with open(os.path.join(*path)) as f:
         for line in f:
             yield re.split(sep, line)
@@ -45,7 +45,7 @@ def loadavg():
 def cpustats():
     stats = {}
 
-    for fields in readfields('/proc/stat'):
+    for fields in readfields('\s+', '/proc/stat'):
         if fields[0].startswith('cpu'):
             stats[fields[0]] = {
                 'user': int(fields[1]),
