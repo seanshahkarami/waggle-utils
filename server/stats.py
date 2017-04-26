@@ -12,7 +12,7 @@ units = {
 
 def readtext(*path):
     with open(os.path.join(*path)) as f:
-        return f.readline().rstrip()
+        return f.readline().strip()
 
 
 def readint(*path):
