@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import jsonify
+from flask import render_template
 import stats
 
 
@@ -8,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return 'here is something for you!'
+    return render_template('index.html')
 
 
 @app.route('/loadavg')
