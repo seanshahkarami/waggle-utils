@@ -113,7 +113,7 @@ def blockinfo(block):
     blockinfo['size'] = readint(blockpath, 'size') * sector_size
     blockinfo['type'] = readtext(blockpath, 'device/type')
 
-    blockinfo['partitions'] = {}
+    blockinfo['partitions'] = []
 
     for part in [part for part in os.listdir(blockpath) if part.startswith(block)]:
         partpath = os.path.join(blockpath, part)
@@ -123,9 +123,9 @@ def blockinfo(block):
         partinfo['start'] = readint(partpath, 'start') * sector_size
         partinfo['size'] = readint(partpath, 'size') * sector_size
         partinfo['ratio'] = partinfo['size'] / blockinfo['size']
+        partinfo['partition'] = readint(partpath, 'partition')
 
-        number = readint(partpath, 'partition')
-        blockinfo['partitions'][number] = partinfo
+    blockinfo['partitions'].sort(key=lambda p: p['partition'])
 
     return blockinfo
 
