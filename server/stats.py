@@ -185,12 +185,7 @@ def ip_route():
 
             result['iface'] = iface
             result['dest'] = ipv4_to_str(hex_to_ipv4(dest))
-
-            if int(fields[2], 16) == 0:
-                result['gateway'] = ''
-            else:
-                result['gateway'] = ipv4_to_str(hex_to_ipv4(gateway))
-
+            result['gateway'] = ipv4_to_str(hex_to_ipv4(gateway))
             result['mask'] = ipv4_to_str(hex_to_ipv4(mask))
 
             results.append(result)
