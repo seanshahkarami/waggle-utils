@@ -32,9 +32,9 @@ def mounts():
     return jsonify(stats.mounts())
 
 
-@app.route('/ip/addr')
-def netstats():
-    return jsonify(stats.ip_addr())
+@app.route('/ip/route')
+def ip_route():
+    return jsonify(stats.ip_route())
 
 
 @app.route('/uptime')

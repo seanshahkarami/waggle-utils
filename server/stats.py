@@ -165,7 +165,7 @@ def ipv4_to_str(ip):
     return '.'.join(map(str, ip))
 
 
-def ip_addr():
+def ip_route():
     results = []
 
     with open('/proc/net/route') as f:
