@@ -170,20 +170,28 @@ def ip_addr():
 
     with open('/proc/net/route') as f:
         # skip header
-        f.readline()
+        header = f.readline().split()
+        column = dict((name, i) for i, name in enumerate(header))
 
         for line in f:
             result = {}
 
             fields = line.split()
 
-            result['interface'] = fields[0].strip()
-            result['address'] = ipv4_to_str(hex_to_ipv4(fields[1]))
+            iface = fields[column['Iface']]
+            dest = fields[column['Destination']]
+            gateway = fields[column['Gateway']]
+            mask = fields[column['Mask']]
+
+            result['iface'] = iface
+            result['dest'] = ipv4_to_str(hex_to_ipv4(dest))
 
             if int(fields[2], 16) == 0:
                 result['gateway'] = ''
             else:
-                result['gateway'] = ipv4_to_str(hex_to_ipv4(fields[2]))
+                result['gateway'] = ipv4_to_str(hex_to_ipv4(gateway))
+
+            result['mask'] = ipv4_to_str(hex_to_ipv4(mask))
 
             results.append(result)
 
