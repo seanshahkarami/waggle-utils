@@ -32,9 +32,9 @@ def mounts():
     return jsonify(stats.mounts())
 
 
-@app.route('/net')
+@app.route('/ip/addr')
 def netstats():
-    return jsonify({})
+    return jsonify(stats.ip_addr())
 
 
 @app.route('/uptime')
@@ -55,3 +55,8 @@ def blockinfo(block):
 @app.route('/devices')
 def devices():
     return jsonify(stats.devices())
+
+
+@app.route('/version')
+def version():
+    return jsonify(stats.version())

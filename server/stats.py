@@ -150,3 +150,41 @@ def devices():
             continue
 
     return devices
+
+
+def version():
+    return readtext('/proc/version')
+
+
+def hex_to_ipv4(s):
+    x = int(s, 16)
+    return tuple((x >> (8*i)) & 0xff for i in range(4))
+
+
+def ipv4_to_str(ip):
+    return '.'.join(map(str, ip))
+
+
+def ip_addr():
+    results = []
+
+    with open('/proc/net/route') as f:
+        # skip header
+        f.readline()
+
+        for line in f:
+            result = {}
+
+            fields = line.split()
+
+            result['interface'] = fields[0].strip()
+            result['address'] = ipv4_to_str(hex_to_ipv4(fields[1]))
+
+            if int(fields[2], 16) == 0:
+                result['gateway'] = ''
+            else:
+                result['gateway'] = ipv4_to_str(hex_to_ipv4(fields[2]))
+
+            results.append(result)
+
+    return results
