@@ -107,6 +107,9 @@ def listblocks():
 def blockinfo(block):
     blockpath = os.path.join('/sys/block', block)
 
+    if not os.path.exists(blockpath):
+        raise FileNotFoundError()
+
     blockinfo = {}
 
     sector_size = readint(blockpath, 'queue/hw_sector_size')

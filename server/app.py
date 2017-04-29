@@ -49,7 +49,10 @@ def blocks():
 
 @app.route('/blocks/<block>')
 def blockinfo(block):
-    return jsonify(stats.blockinfo(block))
+    try:
+        return jsonify(stats.blockinfo(block))
+    except FileNotFoundError:
+        return 'Block not found.', 404
 
 
 @app.route('/devices')
